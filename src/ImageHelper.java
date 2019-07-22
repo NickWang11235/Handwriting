@@ -1,14 +1,15 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
 public class ImageHelper {
 
+    public static final int IMAGE_WIDTH = 60;
+    public static final int IMAGE_HEIGHT = 45;
+    
     /**
      * Resizes an image to a absolute width and height (the image may not be
      * proportional)
@@ -40,25 +41,61 @@ public class ImageHelper {
 
         // writes to output file
         ImageIO.write(outputImage, formatName, new File(outputImagePath));
+
+
+
+
     }
+
+    public static void toText(String path){
+        File file= new File(path);
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(file);
+            PrintWriter out = new PrintWriter(path.substring(0,path.indexOf('.')) + ".txt");
+            int[][] map = new int[IMAGE_HEIGHT][IMAGE_WIDTH];
+            for (int i = 0; i < IMAGE_HEIGHT; i++) {
+                String line = "";
+                for (int j = 0; j < IMAGE_WIDTH; j++) {
+                    int clr=  image.getRGB(j,i);
+                    int  red   = (clr & 0x00ff0000) >> 16;
+                    int  green = (clr & 0x0000ff00) >> 8;
+                    int  blue  =  clr & 0x000000ff;
+
+                    if(red + green + blue < 255) {
+                        map[i][j] = 1;
+                        line += " 1";
+                    }else{
+                        line += " 0";
+                    }
+
+                }
+                line += "\n";
+                out.write(line);
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * Test resizing images
      */
     public static void main(String[] args) {
 
-        File[] folders = new File("src/data").listFiles();
+        File f1 = new File("src/data_resized/testing_set");
+        File f2 = new File("src/data_resized/training_set");
 
-        for(File f: folders){
-            File[] files = f.listFiles();
-            File newFolder = new File( f.getPath() + "_Resized");
-            newFolder.mkdir();
-            for(File file : files){
-                try {
-                  ImageHelper.resize(file.getPath(), newFolder.getPath()+ "\\" + file.getName(), 60, 45);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        File[] testingFiles = f1.listFiles();
+        for(File f : testingFiles){
+            File[] images = f.listFiles();
+            for(File im : images){
+                toText(im.getPath());
             }
         }
+
+
     }
 }
