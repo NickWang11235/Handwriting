@@ -47,16 +47,19 @@ public class ImageHelper {
 
     }
 
-    public static void toText(String path){
-        File file= new File(path);
-        BufferedImage image = null;
+    public static void toText(File file){
+
         try {
-            image = ImageIO.read(file);
-            PrintWriter out = new PrintWriter(path.substring(0,path.indexOf('.')) + ".txt");
+            BufferedImage image = ImageIO.read(file);
+            PrintWriter out = new PrintWriter(file.getPath().substring(0,file.getPath().indexOf('.')) + ".txt");
+            System.out.println(image);
             int[][] map = new int[IMAGE_HEIGHT][IMAGE_WIDTH];
             for (int i = 0; i < IMAGE_HEIGHT; i++) {
                 String line = "";
                 for (int j = 0; j < IMAGE_WIDTH; j++) {
+                    System.out.println(image);
+                    System.out.println(i + " ," + j);
+                    System.out.println(file.getPath());
                     int clr=  image.getRGB(j,i);
                     int  red   = (clr & 0x00ff0000) >> 16;
                     int  green = (clr & 0x0000ff00) >> 8;
@@ -84,17 +87,6 @@ public class ImageHelper {
      * Test resizing images
      */
     public static void main(String[] args) {
-
-        File f1 = new File("src/data_resized/testing_set");
-        File f2 = new File("src/data_resized/training_set");
-
-        File[] testingFiles = f1.listFiles();
-        for(File f : testingFiles){
-            File[] images = f.listFiles();
-            for(File im : images){
-                toText(im.getPath());
-            }
-        }
 
 
     }
